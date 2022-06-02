@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-
+	"github.com/jabutech/simple-blog/handler"
 	"github.com/jabutech/simple-blog/helper"
+	"github.com/jabutech/simple-blog/router"
 	"github.com/jabutech/simple-blog/util"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,5 +18,12 @@ func main() {
 	_, err = gorm.Open(mysql.Open(config.DBSource), &gorm.Config{})
 	helper.FatalError("Connection to database failed!, err: ", err)
 
-	fmt.Println("Connected!")
+	// Handler
+	pingHandler := handler.NewPingHandler()
+
+	// Router
+	router := router.NewPingRouter(pingHandler)
+
+	// Run router
+	router.Run()
 }
