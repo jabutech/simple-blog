@@ -1,0 +1,842 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Blog API",
+    "description": "API Spesification for Blog API",
+    "contact": {
+      "name": "Rizky Darmawan",
+      "email": "darmawanrizky43@gmail.com",
+      "url": "http://jabutech.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Server development"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "Register user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              },
+              "example": {
+                "fullname": "Rizky Darmawan",
+                "email": "rizky@jabutech.com",
+                "password": "password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success register user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "message": "You have successfully registered."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "description": "Field error obtained from package validator",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 400,
+                    "status": "error",
+                    "message": "Registered failed.",
+                    "fields": [
+                      "Fullname must be required.",
+                      "Format must be email address."
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Other errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              },
+              "example": {
+                "email": "rizky@jabutech.com",
+                "password": "password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "Token have content: id_user, fullname, is_admin"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "message": "You have Login."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error Or any errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "description": "Field error obtained from package validator",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 400,
+                    "status": "error",
+                    "message": "Login failed.",
+                    "fields": [
+                      "Email must be required.",
+                      "Password minimum 3 characters."
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Other errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get all data users",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email user",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fullname",
+            "in": "query",
+            "description": "Fullname user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all data users success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UsersResponseSuccess"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "data": [
+                    {
+                      "id": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                      "fullname": "Rizky Darmawan",
+                      "email": "rizky@jabutech",
+                      "isAdmin": true
+                    },
+                    {
+                      "id": "3f268518-2a24-4ef7-84ea-13bc2f9e1aa6",
+                      "fullname": "Dwi Aprilia",
+                      "email": "dwi@jabutech",
+                      "isAdmin": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Get all data users failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get data user by id",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data user by id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UsersResponseSuccess"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "data": {
+                    "fullname": "Rizky Darmawan",
+                    "email": "rizky@jabutech",
+                    "isAdmin": true
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Get data user by id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "description": "User can only see other Members Post",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get all data posts",
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Title post",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all data posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PostsResponseSuccess"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "data": [
+                    {
+                      "id": "cd84146c-715f-47e8-a817-28331d49729c",
+                      "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                      "title": "Atomic Habits"
+                    },
+                    {
+                      "id": "fad7a07f-b4cc-428b-b405-124c1589f32c",
+                      "id_user": "3f268518-2a24-4ef7-84ea-13bc2f9e1aa6",
+                      "title": "REWORK"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Get all data users failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create new data post.",
+        "tags": ["Posts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsCreateAndUpdate"
+              },
+              "example": {
+                "title": "Atomic Habbits"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create new data post success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PostsResponseCreateSuccess"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "data": {
+                    "id": "cd84146c-715f-47e8-a817-28331d49729c",
+                    "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                    "title": "Atomic Habits"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Create new data post failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{postId}": {
+      "put": {
+        "description": "Posts can only be deleted by the user who owns them.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Update data posts",
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "Post Id",
+            "in": "path",
+            "required": true,
+            "description": "Post Id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsCreateAndUpdate"
+              },
+              "example": {
+                "title": "Deep Work"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update data posts success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PostsResponseSuccess"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "data": {
+                    "id": "cd84146c-715f-47e8-a817-28331d49729c",
+                    "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                    "title": "Deep Work"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "description": "Field error obtained from package validator",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 400,
+                    "status": "error",
+                    "message": "Login failed.",
+                    "fields": ["Title must be required."]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Update data posts failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Only admin can delete post.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete data post",
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "Post Id",
+            "in": "path",
+            "required": true,
+            "description": "Post Id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete data post success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 200,
+                  "status": "success",
+                  "message": "Post has been deleted."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Delete data post failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 500,
+                  "status": "error",
+                  "message": "Internal Server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Authentication with JWT"
+      }
+    },
+    "schemas": {
+      "Register": {
+        "type": "object",
+        "properties": {
+          "fullname": {
+            "type": "string",
+            "required": ["true"]
+          },
+          "email": {
+            "type": "string",
+            "required": ["true"]
+          },
+          "password": {
+            "type": "string",
+            "required": ["true"],
+            "minLength": 3
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "required": ["false"],
+            "default": 0
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": ["true"]
+          },
+          "password": {
+            "type": "string",
+            "required": ["true"],
+            "minLength": 3
+          }
+        }
+      },
+      "UsersResponseSuccess": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id use UUID type."
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResponseFailed": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PostsResponseSuccess": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "id_user": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "PostsResponseCreateSuccess": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User format UUID"
+          },
+          "id_user": {
+            "type": "string",
+            "description": "Id user obtained from the currently logged in user."
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "PostsCreateAndUpdate": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
