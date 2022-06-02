@@ -2,8 +2,8 @@ package helper
 
 import "log"
 
-func FatalError(err error) {
+func FatalError(message string, err error) {
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(message, err.Error())
 	}
 }
