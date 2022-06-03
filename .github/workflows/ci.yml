@@ -20,16 +20,13 @@ jobs:
         env:
           MYSQL_USER: root
           MYSQL_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: simple_blog_test
         ports:
           # Maps tcp port 5432 on service container to the host
           - 3306:3306
         # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=10s
-          --health-retries=10
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       # Install go
