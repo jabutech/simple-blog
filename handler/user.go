@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -63,13 +62,6 @@ func (h *userHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	fmt.Println("DEBUG")
-	fmt.Println("DEBUG")
-	fmt.Println("DEBUG")
-	fmt.Println("DEBUG")
-	fmt.Println("DEBUG")
-	fmt.Println("DEBUG")
-	fmt.Println(isEmailAvailable)
 
 	// If email is availability
 	if isEmailAvailable {
