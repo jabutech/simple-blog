@@ -7,8 +7,16 @@ server:
 migrateup:
 	migrate -path migration -database "mysql://root:root@tcp(127.0.0.1:3306)/simple_blog" --verbose up
 
-#migrate down
+# Migrate up for table test
+migrateuptest:
+	migrate -path migration -database "mysql://root:root@tcp(127.0.0.1:3306)/simple_blog_test" --verbose up
+
+# migrate down
 migratedown:
 	migrate -path migration -database "mysql://root:root@tcp(127.0.0.1:3306)/simple_blog" --verbose down
 
-.PHONY: server migrateup migratedown
+# migrate down for table test
+migratedowntest:
+	migrate -path migration -database "mysql://root:root@tcp(127.0.0.1:3306)/simple_blog_test" --verbose down
+
+.PHONY: server migrateup migratedown migrateuptest
