@@ -2,6 +2,9 @@
 server:
 	go run main.go
 
+# Running test
+test:
+	go test -v -cover ./...
 
 # Migrate up
 migrateup:
@@ -19,4 +22,4 @@ migratedown:
 migratedowntest:
 	migrate -path migration -database "mysql://root:root@tcp(127.0.0.1:3306)/simple_blog_test" --verbose down
 
-.PHONY: server migrateup migratedown migrateuptest
+.PHONY: server test migrateup migratedown migrateuptest

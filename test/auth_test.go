@@ -80,3 +80,85 @@ func TestRegisterSuccessWithoutIsAdmin(t *testing.T) {
 	// Response body message
 	assert.Equal(t, "You have successfully registered.", responseBody["message"])
 }
+
+func TestRegisterSuccessWithIsAdmin(t *testing.T) {
+	// Open connection to db
+	db := setupTestDb()
+
+	// Call router with argument db
+	router := setupRouter(db)
+
+	dataBody := fmt.Sprintf(`{"fullname": "%s", "email": "%s", "password": "%s", "is_admin": %t }`, util.RandomFullname(), util.RandomEmail(), "password", true)
+
+	// Create payload request
+	requestBody := strings.NewReader(dataBody)
+	// Create request
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/register", requestBody)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 200 (success)
+	assert.Equal(t, 200, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "success", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "You have successfully registered.", responseBody["message"])
+}
+
+func TestRegisterValidationError(t *testing.T) {
+	// Open connection to db
+	db := setupTestDb()
+
+	// Call router with argument db
+	router := setupRouter(db)
+
+	dataBody := fmt.Sprintf(`{"fullname": "", "email": "aa", "password": "a" }`)
+
+	// Create payload request
+	requestBody := strings.NewReader(dataBody)
+	// Create request
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/register", requestBody)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 200 (success)
+	assert.Equal(t, 400, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "error", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Registered failed.", responseBody["message"])
+}
