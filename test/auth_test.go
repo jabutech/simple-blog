@@ -2,6 +2,7 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -46,8 +47,10 @@ func TestRegisterSuccessWithoutIsAdmin(t *testing.T) {
 	// Call router with argument db
 	router := setupRouter(db)
 
+	dataBody := fmt.Sprintf(`{"fullname": "%s", "email": "%s", "password": "%s"}`, util.RandomFullname(), util.RandomEmail(), "password")
+
 	// Create payload request
-	requestBody := strings.NewReader(`{ "fullname": "Hadzkya Aisyah","email": "aisyah@gmail.com","password": "password"}`)
+	requestBody := strings.NewReader(dataBody)
 	// Create request
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/register", requestBody)
 	// Added header content type
@@ -70,4 +73,10 @@ func TestRegisterSuccessWithoutIsAdmin(t *testing.T) {
 
 	// Response status code must be 200 (success)
 	assert.Equal(t, 200, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "success", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "You have successfully registered.", responseBody["message"])
 }
