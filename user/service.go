@@ -1,9 +1,13 @@
 package user
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type Service interface {
 	Register(input RegisterInput) (User, error)
+	IsEmailAvailable(email string) (bool, error)
 }
 
 type service struct {
@@ -14,6 +18,7 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
+// Function for register data user
 func (s *service) Register(input RegisterInput) (User, error) {
 	// Passing input into object user
 	user := User{}
@@ -29,6 +34,10 @@ func (s *service) Register(input RegisterInput) (User, error) {
 	}
 	// Passing IsAdmin
 	user.IsAdmin = isAdmin
+
+	// Generate uuid for id
+	id := uuid.New()
+	user.ID = id.String()
 
 	// Hash password
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
@@ -47,5 +56,23 @@ func (s *service) Register(input RegisterInput) (User, error) {
 
 	// If success return new user without error
 	return newUser, nil
+}
 
+// EmailIsAvailable for check if email already exists or not
+func (s *service) IsEmailAvailable(email string) (bool, error) {
+
+	// Find email on db with repository
+	user, err := s.repository.FindByEmail(email)
+	// If error
+	if err != nil {
+		return false, err
+	}
+
+	// If user.Id must be empty string / not is exist
+	if user.ID == "" {
+		return false, nil
+	}
+
+	// If is exist
+	return true, nil
 }

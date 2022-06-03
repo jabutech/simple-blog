@@ -739,7 +739,8 @@
           },
           "email": {
             "type": "string",
-            "required": ["true"]
+            "required": ["true"],
+            "description": "Email must be unique."
           },
           "password": {
             "type": "string",
