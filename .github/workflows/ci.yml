@@ -18,8 +18,8 @@ jobs:
         image: mysql:8.0
         # Provide the user and  password for MySQL
         env:
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
+          MYSQL_USER: secret
+          MYSQL_PASSWORD: secret
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: simple_blog_test
         ports:
