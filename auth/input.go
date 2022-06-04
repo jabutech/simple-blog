@@ -1,4 +1,4 @@
-package user
+package auth
 
 // RegisterUserInput a object request for input data register
 type RegisterInput struct {

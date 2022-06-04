@@ -1,12 +1,13 @@
-package user
+package auth
 
 import (
 	"github.com/google/uuid"
+	"github.com/jabutech/simple-blog/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
-	Register(input RegisterInput) (User, error)
+	Register(input RegisterInput) (user.User, error)
 	IsEmailAvailable(email string) (bool, error)
 }
 
@@ -19,9 +20,9 @@ func NewService(repository Repository) *service {
 }
 
 // Function for register data user
-func (s *service) Register(input RegisterInput) (User, error) {
+func (s *service) Register(input RegisterInput) (user.User, error) {
 	// Passing input into object user
-	user := User{}
+	user := user.User{}
 	user.Fullname = input.Fullname
 	user.Email = input.Email
 

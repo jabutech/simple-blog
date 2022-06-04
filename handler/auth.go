@@ -4,25 +4,25 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jabutech/simple-blog/auth"
 	"github.com/jabutech/simple-blog/helper"
-	"github.com/jabutech/simple-blog/user"
 )
 
-type UserHandler interface {
+type AuthHandler interface {
 	Register(c *gin.Context)
 }
 
-type userHandler struct {
-	userService user.Service
+type authHandler struct {
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewAuthHandler(authService auth.Service) *authHandler {
+	return &authHandler{authService}
 }
 
 // Handler Register
-func (h *userHandler) Register(c *gin.Context) {
-	var input user.RegisterInput
+func (h *authHandler) Register(c *gin.Context) {
+	var input auth.RegisterInput
 
 	// Get data body from request user and passing to var input
 	err := c.ShouldBindJSON(&input)
@@ -46,7 +46,7 @@ func (h *userHandler) Register(c *gin.Context) {
 	}
 
 	// Check email is availablity
-	isEmailAvailable, err := h.userService.IsEmailAvailable(input.Email)
+	isEmailAvailable, err := h.authService.IsEmailAvailable(input.Email)
 	// If error from validation
 	if err != nil {
 		// Create new map for handle error
@@ -80,7 +80,7 @@ func (h *userHandler) Register(c *gin.Context) {
 	}
 
 	// If no error, register user with service
-	_, err = h.userService.Register(input)
+	_, err = h.authService.Register(input)
 	// If error from validation
 	if err != nil {
 		// Create new map for handle error
