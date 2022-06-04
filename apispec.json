@@ -80,7 +80,7 @@
                     "message": {
                       "type": "string"
                     },
-                    "fields": {
+                    "data": {
                       "type": "array",
                       "description": "Field error obtained from package validator",
                       "items": {
@@ -92,7 +92,7 @@
                     "code": 400,
                     "status": "error",
                     "message": "Registered failed.",
-                    "fields": [
+                    "data": [
                       "Fullname must be required.",
                       "Format must be email address."
                     ]
@@ -193,7 +193,7 @@
                     "message": {
                       "type": "string"
                     },
-                    "fields": {
+                    "data": {
                       "type": "array",
                       "description": "Field error obtained from package validator",
                       "items": {
@@ -205,7 +205,7 @@
                     "code": 400,
                     "status": "error",
                     "message": "Login failed.",
-                    "fields": [
+                    "data": [
                       "Email must be required.",
                       "Password minimum 3 characters."
                     ]
