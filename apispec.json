@@ -169,7 +169,10 @@
                 "example": {
                   "code": 200,
                   "status": "success",
-                  "message": "You have Login."
+                  "message": "You have Login.",
+                  "data": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOiIzNGUwNmZhMS1lN2E2LTQxZjMtYjI5Ny1lNDRjMjE3MWU1N2IiLCJmdWxsbmFtZSI6IlJpemt5IERhcm1hd2FuIiwiaXNfYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.XRIITRrmmDOkHe9phWhbK_wTsizXZNy0oLSPXBqfFwM"
+                  }
                 }
               }
             }
