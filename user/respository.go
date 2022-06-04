@@ -1,13 +1,12 @@
-package auth
+package user
 
 import (
-	"github.com/jabutech/simple-blog/user"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	Save(user user.User) (user.User, error)
-	FindByEmail(email string) (user.User, error)
+	Save(user User) (User, error)
+	FindByEmail(email string) (User, error)
 }
 
 type repository struct {
@@ -20,7 +19,7 @@ func NewRepository(db *gorm.DB) *repository {
 }
 
 // Save for save data user to db
-func (r *repository) Save(user user.User) (user.User, error) {
+func (r *repository) Save(user User) (User, error) {
 	// Create new user on db
 	err := r.db.Save(&user).Error
 	// If err return object data user, with error
@@ -32,8 +31,8 @@ func (r *repository) Save(user user.User) (user.User, error) {
 	return user, nil
 }
 
-func (r *repository) FindByEmail(email string) (user.User, error) {
-	var user user.User
+func (r *repository) FindByEmail(email string) (User, error) {
+	var user User
 
 	// Find user by email
 	err := r.db.Where("email = ?", email).Find(&user).Error
