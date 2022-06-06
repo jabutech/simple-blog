@@ -1,31 +1,31 @@
 package helper
 
-type ResponseFailed struct {
+type ResponseWithData struct {
 	Code    int         `json:"code"`
 	Status  string      `json:"status"`
 	Message string      `json:"message"`
-	Fields  interface{} `json:"fields"`
+	Data    interface{} `json:"data"`
 }
 
-func ApiResponseFailed(code int, status string, message string, fields interface{}) ResponseFailed {
-	jsonResponse := ResponseFailed{
+func ApiResponseWithData(code int, status string, message string, data interface{}) ResponseWithData {
+	jsonResponse := ResponseWithData{
 		Code:    code,
 		Status:  status,
 		Message: message,
-		Fields:  fields,
+		Data:    data,
 	}
 
 	return jsonResponse
 }
 
-type ResponseSuccess struct {
+type ResponseWithoutData struct {
 	Code    int    `json:"code"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
-func ApiResponseSuccess(code int, status string, message string) ResponseSuccess {
-	jsonResponse := ResponseSuccess{
+func ApiResponseWithoutData(code int, status string, message string) ResponseWithoutData {
+	jsonResponse := ResponseWithoutData{
 		Code:    code,
 		Status:  status,
 		Message: message,

@@ -1,14 +1,22 @@
 package auth
 
 import (
+	"errors"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/jabutech/simple-blog/helper"
 	"github.com/jabutech/simple-blog/user"
+	"github.com/jabutech/simple-blog/util"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
 	Register(input RegisterInput) (user.User, error)
+	Login(input LoginInput) (user.User, error)
 	IsEmailAvailable(email string) (bool, error)
+	GenerateToken(user user.User) (string, error)
 }
 
 type service struct {
@@ -57,6 +65,70 @@ func (s *service) Register(input RegisterInput) (user.User, error) {
 
 	// If success return new user without error
 	return newUser, nil
+}
+
+func (s *service) Login(input LoginInput) (user.User, error) {
+	// Get data input from request
+	email := input.Email
+	password := input.Password
+
+	// Find user with repository
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return user, err
+	}
+
+	// If User id is empty string
+	if user.ID == "" {
+		return user, errors.New("email or password incorrect")
+	}
+
+	// If user is available, compare password hash with password from request use bcrypt
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, errors.New("email or password incorrect")
+	}
+
+	// If no error, return user
+	return user, nil
+}
+
+type Claim struct {
+	UserID   string `json:"user_id"`
+	Fullname string `json:"fullname"`
+	IsAdmin  int    `json:"is_admin"`
+	jwt.StandardClaims
+}
+
+func (s *service) GenerateToken(user user.User) (string, error) {
+	// Create unix time 5 minute
+	expirationTime := time.Now().Add(5 * time.Minute)
+
+	// Create clain for payload token
+	claim := Claim{
+		UserID:   user.ID,
+		Fullname: user.Fullname,
+		IsAdmin:  user.IsAdmin,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	// Create token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+
+	// Load config
+	config, err := util.LoadConfig("../") // "." as location file app.env in root folder
+	helper.FatalError("error load config: ", err)
+
+	// Signed token with secret key
+	signedToken, err := token.SignedString([]byte(config.SecretKey))
+	if err != nil {
+		return signedToken, err
+	}
+
+	// If success, return token
+	return signedToken, nil
 }
 
 // EmailIsAvailable for check if email already exists or not

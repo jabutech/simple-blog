@@ -9,6 +9,7 @@ type Config struct {
 	DBSource      string `mapstructure:"DB_SOURCE"`
 	DBSourceTest  string `mapstructure:"DB_SOURCE_TEST"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	SecretKey     string `mapstructure:"SECRET_KEY"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

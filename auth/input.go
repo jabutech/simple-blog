@@ -7,3 +7,9 @@ type RegisterInput struct {
 	Password string `json:"password" binding:"required,min=3"`
 	IsAdmin  bool   `json:"is_admin"`
 }
+
+// LoginInput a object request for login
+type LoginInput struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required,min=3"`
+}

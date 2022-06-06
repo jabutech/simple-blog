@@ -27,6 +27,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 
 	// Endpoint register
 	api.POST("/register", userHandler.Register)
+	// Endpoint login
+	api.POST("/login", userHandler.Login)
 
 	// Endpoint ping
 	api.GET("/ping", pingHandler.Ping)
