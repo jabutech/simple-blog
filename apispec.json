@@ -303,6 +303,21 @@
               }
             }
           },
+          "401": {
+            "description": "Get all data users Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Get all data users failed",
             "content": {

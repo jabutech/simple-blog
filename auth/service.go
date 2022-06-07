@@ -94,9 +94,7 @@ func (s *service) Login(input LoginInput) (user.User, error) {
 }
 
 type Claim struct {
-	UserID   string `json:"user_id"`
-	Fullname string `json:"fullname"`
-	IsAdmin  int    `json:"is_admin"`
+	UserID string `json:"user_id"`
 	jwt.StandardClaims
 }
 
@@ -106,9 +104,7 @@ func (s *service) GenerateToken(user user.User) (string, error) {
 
 	// Create clain for payload token
 	claim := Claim{
-		UserID:   user.ID,
-		Fullname: user.Fullname,
-		IsAdmin:  user.IsAdmin,
+		UserID: user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
