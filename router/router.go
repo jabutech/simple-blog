@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jabutech/simple-blog/auth"
 	"github.com/jabutech/simple-blog/handler"
@@ -21,6 +22,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 
 	// Create router with gin
 	router := gin.Default()
+	// Use cors
+	router.Use(cors.Default())
 
 	// Router group api
 	api := router.Group("/api")
