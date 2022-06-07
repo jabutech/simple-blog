@@ -17,6 +17,14 @@ import (
 	"gorm.io/gorm"
 )
 
+func SetupRouter(db *gorm.DB) *gin.Engine {
+
+	// Router
+	router := NewRouter(db)
+
+	return router
+}
+
 func NewRouter(db *gorm.DB) *gin.Engine {
 	// Repository
 	userRepository := user.NewRepository(db)

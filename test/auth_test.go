@@ -9,44 +9,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jabutech/simple-blog/auth"
-	"github.com/jabutech/simple-blog/helper"
 	"github.com/jabutech/simple-blog/router"
 	"github.com/jabutech/simple-blog/util"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
-
-// Function setup for connection to database test
-func setupTestDb() *gorm.DB {
-	// Load config
-	config, err := util.LoadConfig("../") // "." as location file app.env in root folder
-	helper.FatalError("error load config: ", err)
-
-	// Open connection to db
-	db, err := gorm.Open(mysql.Open(config.DBSourceTest), &gorm.Config{})
-	helper.FatalError("Connection to database failed!, err: ", err)
-
-	return db
-}
-
-func setupRouter(db *gorm.DB) *gin.Engine {
-
-	// Router
-	router := router.NewRouter(db)
-
-	return router
-}
 
 // Func for create account random
 func createRandomAccount(t *testing.T, withIsAdmin bool) auth.RegisterInput {
 	// Open connection to db
-	db := setupTestDb()
+	db := util.SetupTestDb()
 
 	// Call router with argument db
-	router := setupRouter(db)
+	router := router.SetupRouter(db)
 
 	var data auth.RegisterInput
 	var dataBody string
@@ -125,10 +100,10 @@ func TestRegisterSuccessWithIsAdmin(t *testing.T) {
 
 func TestRegisterValidationError(t *testing.T) {
 	// Open connection to db
-	db := setupTestDb()
+	db := util.SetupTestDb()
 
 	// Call router with argument db
-	router := setupRouter(db)
+	router := router.SetupRouter(db)
 
 	dataBody := fmt.Sprintf(`{"fullname": "", "email": "aa", "password": "a" }`)
 
@@ -167,7 +142,7 @@ func TestRegisterValidationError(t *testing.T) {
 // Test Login
 func TestLoginSuccess(t *testing.T) {
 	// Open connection to db
-	db := setupTestDb()
+	db := util.SetupTestDb()
 
 	// Var withIsAdmin value false
 	withIsAdmin := false
@@ -175,7 +150,7 @@ func TestLoginSuccess(t *testing.T) {
 	// Create account random
 	account := createRandomAccount(t, withIsAdmin)
 	// Call router with argument db
-	router := setupRouter(db)
+	router := router.SetupRouter(db)
 
 	// Data body with data from create account random
 	dataBody := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, account.Email, account.Password)
