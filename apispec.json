@@ -232,7 +232,7 @@
         }
       }
     },
-    "/users": {
+    "/api/users": {
       "get": {
         "security": [
           {
@@ -321,7 +321,7 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/api/users/{userId}": {
       "get": {
         "security": [
           {
@@ -390,7 +390,7 @@
         }
       }
     },
-    "/posts": {
+    "/api/posts": {
       "get": {
         "description": "User can only see other Members Post",
         "security": [
@@ -539,7 +539,7 @@
         }
       }
     },
-    "/posts/{postId}": {
+    "/api/posts/{postId}": {
       "put": {
         "description": "Posts can only be deleted by the user who owns them.",
         "security": [
