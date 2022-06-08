@@ -257,3 +257,40 @@ func TestGetListUsers(t *testing.T) {
 		assert.NotNil(t, mapList["is_admin"])
 	}
 }
+
+// Test get all users
+func TestGetListUsersUnauthorized(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:8080/api/users", nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+	// Response status code must be 200 (success)
+	assert.Equal(t, 401, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 401, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "error", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Unauthorized", responseBody["message"])
+}
