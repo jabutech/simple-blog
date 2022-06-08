@@ -405,6 +405,21 @@
               }
             }
           },
+          "401": {
+            "description": "Get data user by id unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Get data user by id.",
             "content": {
