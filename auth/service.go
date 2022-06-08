@@ -99,8 +99,8 @@ type Claim struct {
 }
 
 func (s *service) GenerateToken(user user.User) (string, error) {
-	// Create unix time 5 minute
-	expirationTime := time.Now().Add(5 * time.Minute)
+	// Create 1 day
+	expirationTime := time.Now().AddDate(0, 0, 1)
 
 	// Create clain for payload token
 	claim := Claim{
