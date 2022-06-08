@@ -12,6 +12,7 @@ import (
 	"github.com/jabutech/simple-blog/auth"
 	"github.com/jabutech/simple-blog/handler"
 	"github.com/jabutech/simple-blog/helper"
+	"github.com/jabutech/simple-blog/post"
 	"github.com/jabutech/simple-blog/user"
 	"github.com/jabutech/simple-blog/util"
 	"gorm.io/gorm"
@@ -28,14 +29,17 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 func NewRouter(db *gorm.DB) *gin.Engine {
 	// Repository
 	userRepository := user.NewRepository(db)
+	postRepository := post.NewRepository(db)
 
 	// Service
 	authService := auth.NewService(userRepository)
 	userService := user.NewService(userRepository)
+	postService := post.NewService(postRepository)
 
 	// Handler
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
+	postHandler := handler.NewPostHandler(postService)
 	pingHandler := handler.NewPingHandler()
 
 	// Create router with gin
@@ -57,6 +61,11 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	users.GET("", authMiddleware(userService), userHandler.GetUsers)
 	// Endpoint get all user by id
 	users.GET("/:id", authMiddleware(userService), userHandler.GetUser)
+
+	// Group posts
+	posts := api.Group("/posts")
+	// Endpond create new post
+	posts.POST("", authMiddleware(userService), postHandler.Create)
 
 	// Endpoint ping
 	api.GET("/ping", pingHandler.Ping)

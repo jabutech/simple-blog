@@ -10,6 +10,7 @@ import (
 
 type AuthHandler interface {
 	Register(c *gin.Context)
+	Login(c *gin.Context)
 }
 
 type authHandler struct {
