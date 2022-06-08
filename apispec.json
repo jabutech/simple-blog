@@ -387,6 +387,24 @@
               }
             }
           },
+          "400": {
+            "description": "Error user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailedWithData"
+                },
+                "example": {
+                  "code": 400,
+                  "status": "error",
+                  "message": "Error to get user detail",
+                  "data": {
+                    "errors": "User not found"
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Get data user by id.",
             "content": {
@@ -801,6 +819,28 @@
           },
           "is_admin": {
             "type": "boolean"
+          }
+        }
+      },
+      "ResponseFailedWithData": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "type": "string"
+              }
+            }
           }
         }
       },

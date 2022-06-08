@@ -55,6 +55,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	users := api.Group("/users")
 	// Endpoint get all users
 	users.GET("", authMiddleware(userService), userHandler.GetUsers)
+	// Endpoint get all user by id
+	users.GET("/:id", authMiddleware(userService), userHandler.GetUser)
 
 	// Endpoint ping
 	api.GET("/ping", pingHandler.Ping)

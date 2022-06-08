@@ -48,6 +48,68 @@ func (h *userHandler) GetUsers(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, response)
+}
 
-	// TODO: authorization
+// GetUsers find all users data
+func (h *userHandler) GetUser(c *gin.Context) {
+	var userId user.GetIdUserInput
+
+	// Get uri `id`
+	err := c.ShouldBindUri(&userId)
+	if err != nil {
+		// Create new map for handle error
+		errorMessage := gin.H{"errors": err}
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Failed get uri id",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Get user
+	userData, err := h.service.GetUserById(userId.Id)
+	if err != nil {
+		// Create new map for handle error
+		errorMessage := gin.H{"errors": "Server error"}
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Error to get user",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if userData.ID == "" {
+		// Create new map for handle error
+		errorMessage := gin.H{"errors": "User not found"}
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Error to get user detail",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Create format response with helper ApiResponseWithData
+	response := helper.ApiResponseWithData(
+		http.StatusOK,
+		"success",
+		"User detail",
+		user.FormatUser(userData), // use formatter
+	)
+
+	c.JSON(http.StatusOK, response)
 }
