@@ -139,8 +139,8 @@ func TestRegisterValidationError(t *testing.T) {
 	assert.Equal(t, "Registered failed.", responseBody["message"])
 }
 
-// Test Login
-func TestLoginSuccess(t *testing.T) {
+// loginRandomAccount for login simulation with random account that returns jwt token
+func loginRandomAccount(t *testing.T) interface{} {
 	// Open connection to db
 	db := util.SetupTestDb()
 
@@ -191,4 +191,69 @@ func TestLoginSuccess(t *testing.T) {
 	// Property token is not nul
 	assert.NotZero(t, responseBody["data"].(map[string]interface{})["token"])
 
+	// Get token for return use any test
+	token := responseBody["data"].(map[string]interface{})["token"]
+	return token
+}
+
+// Test Login
+func TestLoginSuccess(t *testing.T) {
+	loginRandomAccount(t)
+}
+
+// Test get all users
+func TestGetListUsers(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// login for get token
+	token := loginRandomAccount(t)
+	strToken := fmt.Sprintf("Bearer %s", token)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:8080/api/users", nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+	// Added header Authorization with by inserting jwt token
+	request.Header.Add("Authorization", strToken)
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+	// Response status code must be 200 (success)
+	assert.Equal(t, 200, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "success", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "List of users", responseBody["message"])
+
+	// Response data list users
+	var listUsers = responseBody["data"].([]interface{})
+	// Response body data length not 0
+	assert.NotEqual(t, 0, len(listUsers))
+
+	// All property not empty
+	for _, list := range listUsers {
+		mapList := list.(map[string]interface{})
+		assert.NotEmpty(t, mapList["id"])
+		assert.NotEmpty(t, mapList["email"])
+		assert.NotEmpty(t, mapList["fullname"])
+		assert.NotNil(t, mapList["is_admin"])
+	}
 }
