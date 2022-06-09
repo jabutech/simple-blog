@@ -113,7 +113,7 @@ func (h *postHandler) GetPosts(c *gin.Context) {
 	// Create response with helper
 	response := helper.ApiResponseWithData(
 		http.StatusOK,
-		"SUCCESS",
+		"success",
 		"List of posts",
 		formatter,
 	)
