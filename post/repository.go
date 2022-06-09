@@ -1,6 +1,8 @@
 package post
 
 import (
+	"fmt"
+
 	"github.com/jabutech/simple-blog/user"
 	"gorm.io/gorm"
 )
@@ -8,7 +10,8 @@ import (
 type Repository interface {
 	Save(post Post) (Post, error)
 	FindAll(user user.User) ([]Post, error)
-	FindByTitle(title string) (Post, error)
+	FindByTitle(title string) ([]Post, error)
+	TitleIsExist(title string) (Post, error)
 }
 
 type repository struct {
@@ -52,7 +55,19 @@ func (r *repository) FindAll(user user.User) ([]Post, error) {
 	return posts, nil
 }
 
-func (r *repository) FindByTitle(title string) (Post, error) {
+func (r *repository) FindByTitle(title string) ([]Post, error) {
+	var posts []Post
+
+	strFullname := fmt.Sprint("%" + title + "%")
+	err := r.db.Preload("User").Where("title like ?", strFullname).Find(&posts).Error
+	if err != nil {
+		return posts, err
+	}
+
+	return posts, nil
+}
+
+func (r *repository) TitleIsExist(title string) (Post, error) {
 	var post Post
 
 	err := r.db.Where("title = ?", title).Find(&post).Error

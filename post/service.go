@@ -30,7 +30,7 @@ func (s *service) Create(input CreatePostInput) (Post, error) {
 	post.Id = id.String()
 
 	// Check title is exist
-	checkTitle, err := s.repository.FindByTitle(input.Title)
+	checkTitle, err := s.repository.TitleIsExist(input.Title)
 	if err != nil {
 		return checkTitle, err
 	}
@@ -54,16 +54,9 @@ func (s *service) Create(input CreatePostInput) (Post, error) {
 func (s *service) GetPosts(title string, user user.User) ([]Post, error) {
 	// If parameter title not empty string
 	if title != "" {
-		// Find post by title
-		posts := []Post{}
-		post, err := s.repository.FindByTitle(title)
+		posts, err := s.repository.FindByTitle(title)
 		if err != nil {
 			return posts, err
-		}
-
-		// If post is available, append to var posts
-		if post.Id != "" {
-			posts = append(posts, post)
 		}
 
 		return posts, nil
