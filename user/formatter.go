@@ -24,6 +24,7 @@ func FormatUser(user User) UserFormatter {
 	return formatter
 }
 
+// Formatter for list users
 func FormatUsers(users []User) []UserFormatter {
 	// If data not available, return empty array
 	if len(users) == 0 {
