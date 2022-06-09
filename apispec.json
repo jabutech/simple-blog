@@ -472,6 +472,9 @@
                     "status": {
                       "type": "string"
                     },
+                    "message": {
+                      "type": "string"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
@@ -483,6 +486,7 @@
                 "example": {
                   "code": 200,
                   "status": "success",
+                  "message": "List of users",
                   "data": [
                     {
                       "id": "cd84146c-715f-47e8-a817-28331d49729c",
