@@ -141,14 +141,11 @@ func TestRegisterValidationError(t *testing.T) {
 }
 
 // LoginRandomAccount for login simulation with random account that returns jwt token
-func LoginRandomAccount(t *testing.T) interface{} {
+func LoginRandomAccount(t *testing.T, withIsAdmin bool) interface{} {
 	// Open connection to db
 	db := util.SetupTestDb()
 
-	// Var withIsAdmin value false
-	withIsAdmin := false
-
-	// Create account random
+	// Create account random, with parameter withIs admin
 	account := CreateRandomAccount(t, withIsAdmin)
 	// Call router with argument db
 	router := router.SetupRouter(db)
@@ -199,7 +196,8 @@ func LoginRandomAccount(t *testing.T) interface{} {
 
 // Test Login
 func TestLoginSuccess(t *testing.T) {
-	LoginRandomAccount(t)
+	// LoginRandomAccount for test login, with argument true set as admin `true`
+	LoginRandomAccount(t, true)
 }
 
 // Test get all users
@@ -210,8 +208,8 @@ func TestGetListUsers(t *testing.T) {
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
-	// login for get token
-	token := LoginRandomAccount(t)
+	// LoginRandomAccount for test login, with argument true set as admin `true`
+	token := LoginRandomAccount(t, true)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// Create request
@@ -305,8 +303,8 @@ func TestGetUserByIdSuccess(t *testing.T) {
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
-	// login for get token
-	token := LoginRandomAccount(t)
+	// LoginRandomAccount for test login, with argument true set as admin `true`
+	token := LoginRandomAccount(t, true)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// helper.EncodedToken for generate token and get string id
@@ -362,8 +360,8 @@ func TestGetUserByIdNotFound(t *testing.T) {
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
-	// login for get token
-	token := LoginRandomAccount(t)
+	// LoginRandomAccount for test login, with argument true set as admin `true`
+	token := LoginRandomAccount(t, true)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// var wrong user id
@@ -415,8 +413,8 @@ func TestGetUserByIdUnauthorized(t *testing.T) {
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
-	// login for get token
-	token := LoginRandomAccount(t)
+	// LoginRandomAccount for test login, with argument true set as admin `true`
+	token := LoginRandomAccount(t, true)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// helper.EncodedToken for generate token and get string id
