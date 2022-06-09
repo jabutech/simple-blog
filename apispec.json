@@ -440,7 +440,7 @@
     },
     "/api/posts": {
       "get": {
-        "description": "User can only see other Members Post",
+        "description": "If the list post that sees is a user with is_admin true, display all list post. If no, show other only user post.",
         "security": [
           {
             "bearerAuth": []
@@ -486,15 +486,30 @@
                   "data": [
                     {
                       "id": "cd84146c-715f-47e8-a817-28331d49729c",
-                      "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                      "author": "Rizky Darmawan",
                       "title": "Atomic Habits"
                     },
                     {
                       "id": "fad7a07f-b4cc-428b-b405-124c1589f32c",
-                      "id_user": "3f268518-2a24-4ef7-84ea-13bc2f9e1aa6",
+                      "author": "Dwi Aprilia",
                       "title": "REWORK"
                     }
                   ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Get all data users Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
                 }
               }
             }
