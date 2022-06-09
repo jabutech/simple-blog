@@ -4,10 +4,12 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/jabutech/simple-blog/user"
 )
 
 type Service interface {
 	Create(title CreatePostInput) (Post, error)
+	GetPosts(title string, user user.User) ([]Post, error)
 }
 
 type service struct {
@@ -46,5 +48,33 @@ func (s *service) Create(input CreatePostInput) (Post, error) {
 
 	// Success, return newPost
 	return newPost, nil
+
+}
+
+func (s *service) GetPosts(title string, user user.User) ([]Post, error) {
+	// If parameter title not empty string
+	if title != "" {
+		// Find post by title
+		posts := []Post{}
+		post, err := s.repository.FindByTitle(title)
+		if err != nil {
+			return posts, err
+		}
+
+		// If post is available, append to var posts
+		if post.Id != "" {
+			posts = append(posts, post)
+		}
+
+		return posts, nil
+	}
+
+	// Find all posts
+	posts, err := s.repository.FindAll(user)
+	if err != nil {
+		return posts, err
+	}
+
+	return posts, nil
 
 }

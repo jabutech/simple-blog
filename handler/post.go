@@ -11,6 +11,7 @@ import (
 
 type PostHandler interface {
 	Create(c *gin.Context)
+	GetPosts(c *gin.Context)
 }
 
 type postHandler struct {
@@ -81,4 +82,43 @@ func (h *postHandler) Create(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *postHandler) GetPosts(c *gin.Context) {
+	// Get query `title`
+	title := c.Query("title")
+
+	// Get data current user is logged in from context
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	// Get all post
+	posts, err := h.postService.GetPosts(title, currentUser)
+	if err != nil {
+		// Create new map for handle error
+		errorMessage := gin.H{"errors": "server error"}
+		// Create response with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Error to get posts",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// If no error, create format with helper
+	formatter := post.FormatPosts(posts)
+	// Create response with helper
+	response := helper.ApiResponseWithData(
+		http.StatusOK,
+		"SUCCESS",
+		"List of posts",
+		formatter,
+	)
+
+	c.JSON(http.StatusOK, response)
+	return
+
 }

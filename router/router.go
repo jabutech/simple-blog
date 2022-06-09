@@ -64,6 +64,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 
 	// Group posts
 	posts := api.Group("/posts")
+	// Endpoint list post
+	posts.GET("", authMiddleware(userService), postHandler.GetPosts)
 	// Endpond create new post
 	posts.POST("", authMiddleware(userService), postHandler.Create)
 
