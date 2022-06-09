@@ -17,7 +17,7 @@ import (
 )
 
 // Func for create account random
-func createRandomAccount(t *testing.T, withIsAdmin bool) auth.RegisterInput {
+func CreateRandomAccount(t *testing.T, withIsAdmin bool) auth.RegisterInput {
 	// Open connection to db
 	db := util.SetupTestDb()
 
@@ -86,16 +86,16 @@ func createRandomAccount(t *testing.T, withIsAdmin bool) auth.RegisterInput {
 func TestRegisterSuccessWithoutIsAdmin(t *testing.T) {
 	// Var withIsAdmin value false
 	withIsAdmin := false
-	// Call function createRandomAccount for test create account
-	createRandomAccount(t, withIsAdmin)
+	// Call function CreateRandomAccount for test create account
+	CreateRandomAccount(t, withIsAdmin)
 }
 
 func TestRegisterSuccessWithIsAdmin(t *testing.T) {
 
 	// Var withIsAdmin value true
 	withIsAdmin := true
-	// Call function createRandomAccount for test create account
-	createRandomAccount(t, withIsAdmin)
+	// Call function CreateRandomAccount for test create account
+	CreateRandomAccount(t, withIsAdmin)
 
 }
 
@@ -140,8 +140,8 @@ func TestRegisterValidationError(t *testing.T) {
 	assert.Equal(t, "Registered failed.", responseBody["message"])
 }
 
-// loginRandomAccount for login simulation with random account that returns jwt token
-func loginRandomAccount(t *testing.T) interface{} {
+// LoginRandomAccount for login simulation with random account that returns jwt token
+func LoginRandomAccount(t *testing.T) interface{} {
 	// Open connection to db
 	db := util.SetupTestDb()
 
@@ -149,7 +149,7 @@ func loginRandomAccount(t *testing.T) interface{} {
 	withIsAdmin := false
 
 	// Create account random
-	account := createRandomAccount(t, withIsAdmin)
+	account := CreateRandomAccount(t, withIsAdmin)
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
@@ -199,7 +199,7 @@ func loginRandomAccount(t *testing.T) interface{} {
 
 // Test Login
 func TestLoginSuccess(t *testing.T) {
-	loginRandomAccount(t)
+	LoginRandomAccount(t)
 }
 
 // Test get all users
@@ -211,7 +211,7 @@ func TestGetListUsers(t *testing.T) {
 	router := router.SetupRouter(db)
 
 	// login for get token
-	token := loginRandomAccount(t)
+	token := LoginRandomAccount(t)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// Create request
@@ -306,7 +306,7 @@ func TestGetUserByIdSuccess(t *testing.T) {
 	router := router.SetupRouter(db)
 
 	// login for get token
-	token := loginRandomAccount(t)
+	token := LoginRandomAccount(t)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// helper.EncodedToken for generate token and get string id
@@ -363,7 +363,7 @@ func TestGetUserByIdNotFound(t *testing.T) {
 	router := router.SetupRouter(db)
 
 	// login for get token
-	token := loginRandomAccount(t)
+	token := LoginRandomAccount(t)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// var wrong user id
@@ -416,7 +416,7 @@ func TestGetUserByIdUnauthorized(t *testing.T) {
 	router := router.SetupRouter(db)
 
 	// login for get token
-	token := loginRandomAccount(t)
+	token := LoginRandomAccount(t)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// helper.EncodedToken for generate token and get string id

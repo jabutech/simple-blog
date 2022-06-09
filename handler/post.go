@@ -43,7 +43,7 @@ func (h *postHandler) Create(c *gin.Context) {
 		response := helper.ApiResponseWithData(
 			http.StatusBadRequest,
 			"error",
-			"Registered failed.",
+			"Failed create post",
 			errorMessage,
 		)
 
