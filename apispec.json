@@ -851,7 +851,7 @@
                 "example": {
                   "code": 200,
                   "status": "success",
-                  "message": "Post has been deleted."
+                  "message": "Post has been deleted"
                 }
               }
             }
