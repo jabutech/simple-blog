@@ -745,3 +745,189 @@ func TestUpdatePostUnauthorized(t *testing.T) {
 	// Response body message
 	assert.Equal(t, "Unauthorized", responseBody["message"])
 }
+
+// TestDeletePostSuccess as test delete posts success
+func TestDeletePostSuccess(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Generate random post, and get token used to create this post for check if author post is in the list
+	newPost, strToken := createRandomPost(t, true)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/api/posts/"+newPost.Id, nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+	// Added header Authorization with by inserting jwt token
+	request.Header.Add("Authorization", strToken)
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 200 (success)
+	assert.Equal(t, 200, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "success", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Post has been deleted", responseBody["message"])
+}
+
+// TestDeletePostNotFound as test delete with post not found
+func TestDeletePostNotFound(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Generate random post, and get token used to create this post for check if author post is in the list
+	_, strToken := createRandomPost(t, true)
+
+	// Var postId as wrong id
+	postId := "cd84146c-715f-47e8-a817-28331d49729c"
+
+	// Create request
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/api/posts/"+postId, nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+	// Added header Authorization with by inserting jwt token
+	request.Header.Add("Authorization", strToken)
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 400 (bad request)
+	assert.Equal(t, 400, response.StatusCode)
+	// Response body status code must be 400 (bad request)
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "error", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Delete failed", responseBody["message"])
+
+	// Response data list posts
+	responseData := responseBody["data"]
+	// Errors message must be `do not have access to this post`
+	assert.Equal(t, "post not found", responseData.(map[string]interface{})["errors"])
+
+}
+
+// TestDeletePostNotAllowedIsAdminFalse as test delete with user request not admin
+func TestDeletePostNotAllowedIsAdminFalse(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Generate random post, and get token used to create this post for check if author post is in the list
+	// And set parameter is_admin false
+	newPost, strToken := createRandomPost(t, false)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/api/posts/"+newPost.Id, nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+	// Added header Authorization with by inserting jwt token
+	request.Header.Add("Authorization", strToken)
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 400 (bad request)
+	assert.Equal(t, 400, response.StatusCode)
+	// Response body status code must be 400 (bad request)
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "error", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Delete failed", responseBody["message"])
+
+	// Response data list posts
+	responseData := responseBody["data"]
+	// Errors message must be `do not have access to this post`
+	assert.Equal(t, "access not allowed", responseData.(map[string]interface{})["errors"])
+
+}
+
+// TestDeletePostUnauthorized as test delete with status unauthorized
+func TestDeletePostUnauthorized(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Generate random post And set parameter is_admin false
+	newPost, _ := createRandomPost(t, false)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/api/posts/"+newPost.Id, nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 401 (Unauthorized)
+	assert.Equal(t, 401, response.StatusCode)
+	// Response body status code must be 401 (Unauthorized)
+	assert.Equal(t, 401, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "error", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "Unauthorized", responseBody["message"])
+}
