@@ -10,6 +10,7 @@ import (
 type Service interface {
 	Create(title CreatePostInput) (Post, error)
 	Update(Id UpdatePostInput) (Post, error)
+	Delete(Id string) error
 	GetPosts(title string, user user.User) ([]Post, error)
 }
 
@@ -80,6 +81,35 @@ func (s *service) Update(Input UpdatePostInput) (Post, error) {
 
 	// Success, return updated post
 	return updatedPost, nil
+}
+
+func (s *service) Delete(Id string, userIsAdmin bool) (bool, error) {
+	// If status is_admin current user loggedin not `true`
+	if !userIsAdmin {
+		// Return error
+		return false, errors.New("access not allowed")
+	}
+
+	// Find post
+	post, err := s.repository.FindById(Id)
+	if err != nil {
+		return false, err
+	}
+
+	// If post not available
+	if post.Id == "" {
+		return false, errors.New("post not found")
+	}
+
+	// Delete post
+	err = s.repository.Delete(post)
+	if err != nil {
+		return false, err
+	}
+
+	// Success, return true for notif success delete
+	return true, nil
+
 }
 
 func (s *service) GetPosts(title string, user user.User) ([]Post, error) {
