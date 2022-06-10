@@ -8,7 +8,8 @@ import (
 )
 
 type Service interface {
-	Create(title CreatePostInput) (Post, error)
+	Create(title CreateOrUpdatePostInput) (Post, error)
+	Update(Id CreateOrUpdatePostInput) (Post, error)
 	GetPosts(title string, user user.User) ([]Post, error)
 }
 
@@ -20,7 +21,7 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) Create(input CreatePostInput) (Post, error) {
+func (s *service) Create(input CreateOrUpdatePostInput) (Post, error) {
 	// Passing input into object post
 	post := Post{}
 	post.Title = input.Title
@@ -49,6 +50,31 @@ func (s *service) Create(input CreatePostInput) (Post, error) {
 	// Success, return newPost
 	return newPost, nil
 
+}
+
+func (s *service) Update(Input CreateOrUpdatePostInput) (Post, error) {
+	// Find post by id
+	post, err := s.repository.FindById(Input.UserId)
+	if err != nil {
+		return post, err
+	}
+
+	// If post not available
+	if post.Id == "" {
+		return post, errors.New("post not found")
+	}
+
+	// Passing update request title to object post title
+	post.Title = Input.Title
+
+	// Update post
+	updatedPost, err := s.repository.Update(post)
+	if err != nil {
+		return updatedPost, err
+	}
+
+	// Success, return updated post
+	return updatedPost, nil
 }
 
 func (s *service) GetPosts(title string, user user.User) ([]Post, error) {
