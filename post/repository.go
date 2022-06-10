@@ -9,7 +9,9 @@ import (
 
 type Repository interface {
 	Save(post Post) (Post, error)
+	Update(post Post) (Post, error)
 	FindAll(user user.User) ([]Post, error)
+	FindById(Id string) (Post, error)
 	FindByTitle(title string) ([]Post, error)
 	TitleIsExist(title string) (Post, error)
 }
@@ -24,6 +26,16 @@ func NewRepository(db *gorm.DB) *repository {
 
 func (r *repository) Save(post Post) (Post, error) {
 	// Create new post
+	err := r.db.Save(&post).Error
+	if err != nil {
+		return post, err
+	}
+
+	return post, nil
+}
+
+func (r *repository) Update(post Post) (Post, error) {
+	// Save update data
 	err := r.db.Save(&post).Error
 	if err != nil {
 		return post, err
@@ -53,6 +65,17 @@ func (r *repository) FindAll(user user.User) ([]Post, error) {
 	}
 
 	return posts, nil
+}
+
+func (r *repository) FindById(Id string) (Post, error) {
+	var post Post
+
+	err := r.db.Where("id = ?", Id).Find(&post).Error
+	if err != nil {
+		return post, err
+	}
+
+	return post, nil
 }
 
 func (r *repository) FindByTitle(title string) ([]Post, error) {
