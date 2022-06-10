@@ -591,6 +591,57 @@
               }
             }
           },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Field error obtained from package validator",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 400,
+                    "status": "error",
+                    "message": "created post failed",
+                    "data": {
+                      "errors": ["Title must be required."]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Get all data users Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Create new data post failed.",
             "content": {
@@ -611,7 +662,7 @@
     },
     "/api/posts/{postId}": {
       "put": {
-        "description": "Posts can only be deleted by the user who owns them.",
+        "description": "Posts can only be updated by the user who owns them.",
         "security": [
           {
             "bearerAuth": []
@@ -658,6 +709,9 @@
                     "status": {
                       "type": "string"
                     },
+                    "message": {
+                      "type": "string"
+                    },
                     "data": {
                       "$ref": "#/components/schemas/PostsResponseSuccess"
                     }
@@ -666,6 +720,7 @@
                 "example": {
                   "code": 200,
                   "status": "success",
+                  "message": "post has been updated successfully",
                   "data": {
                     "id": "cd84146c-715f-47e8-a817-28331d49729c",
                     "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
@@ -691,20 +746,47 @@
                     "message": {
                       "type": "string"
                     },
-                    "fields": {
-                      "type": "array",
+                    "data": {
+                      "type": "object",
                       "description": "Field error obtained from package validator",
                       "items": {
                         "type": "string"
                       }
                     }
                   },
-                  "example": {
-                    "code": 400,
-                    "status": "error",
-                    "message": "Login failed.",
-                    "fields": ["Title must be required."]
-                  }
+                  "example": [
+                    {
+                      "code": 400,
+                      "status": "error",
+                      "message": "Updated failed.",
+                      "data": {
+                        "errors": ["Title must be required."]
+                      }
+                    },
+                    {
+                      "code": 400,
+                      "status": "error",
+                      "message": "Updated failed.",
+                      "data": {
+                        "errors": ["Post not found"]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Get all data users Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
                 }
               }
             }
@@ -770,6 +852,57 @@
                   "code": 200,
                   "status": "success",
                   "message": "Post has been deleted."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Field error obtained from package validator",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 400,
+                    "status": "error",
+                    "message": "delete failed.",
+                    "data": {
+                      "errors": ["Post not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Get all data users Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseFailed"
+                },
+                "example": {
+                  "code": 401,
+                  "status": "error",
+                  "message": "Unauthorized"
                 }
               }
             }
