@@ -192,6 +192,4 @@ func (h *postHandler) GetPosts(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, response)
-	return
-
 }
