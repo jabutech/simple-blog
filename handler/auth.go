@@ -8,11 +8,6 @@ import (
 	"github.com/jabutech/simple-blog/helper"
 )
 
-type AuthHandler interface {
-	Register(c *gin.Context)
-	Login(c *gin.Context)
-}
-
 type authHandler struct {
 	authService auth.Service
 }

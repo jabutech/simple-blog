@@ -9,11 +9,6 @@ import (
 	"github.com/jabutech/simple-blog/user"
 )
 
-type PostHandler interface {
-	Create(c *gin.Context)
-	GetPosts(c *gin.Context)
-}
-
 type postHandler struct {
 	postService post.Service
 }
