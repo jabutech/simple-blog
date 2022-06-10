@@ -17,14 +17,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createRandomPost(t *testing.T) (post.Post, string) {
+func createRandomPost(t *testing.T, isAdminTrue bool) (post.Post, string) {
 	// Open connection to db
 	db := util.SetupTestDb()
 	// Call router with argument db
 	router := router.SetupRouter(db)
 
 	// Login for get token use LoginRandomAccount, with argument true set as admin `true`
-	token := LoginRandomAccount(t, true)
+	token := LoginRandomAccount(t, isAdminTrue)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
 	// Data body with data from create account random
@@ -81,7 +81,7 @@ func createRandomPost(t *testing.T) (post.Post, string) {
 
 // Test Create post success
 func TestCreatePostSuccess(t *testing.T) {
-	createRandomPost(t)
+	createRandomPost(t, true)
 }
 
 // Test create post validation error
@@ -147,7 +147,7 @@ func TestCreatePostTitleExistError(t *testing.T) {
 	token := LoginRandomAccount(t, true)
 	strToken := fmt.Sprintf("Bearer %s", token)
 
-	postExist, _ := createRandomPost(t)
+	postExist, _ := createRandomPost(t, true)
 	// Data body with empty string
 	dataBody := fmt.Sprintf(`{"title": "%s"}`, postExist.Title)
 	// Create payload request
@@ -240,7 +240,7 @@ func TestGetListPostsSuccessWithIsAdminTrue(t *testing.T) {
 	router := router.SetupRouter(db)
 
 	// Generate random post, and get token used to create this post for check if author post is in the list
-	_, strToken := createRandomPost(t)
+	_, strToken := createRandomPost(t, true)
 
 	// helper.EncodedToken for generate token and get string id
 	userId, _ := helper.EncodedToken(strToken)
@@ -305,7 +305,79 @@ func TestGetListPostsSuccessWithIsAdminTrue(t *testing.T) {
 	assert.NotEqual(t, 0, countAuthor)
 }
 
+// TestGetListPostsSuccessWithIsAdminTrue as find list post with exception not showing post owned user is logged in
+func TestGetListPostsSuccessWithIsAdminFalse(t *testing.T) {
+	// Open connection to db
+	db := util.SetupTestDb()
+
+	// Call router with argument db
+	router := router.SetupRouter(db)
+
+	// Generate random post, and get token used to create this post for check if author post is in the list
+	_, strToken := createRandomPost(t, false)
+
+	// helper.EncodedToken for generate token and get string id
+	userId, _ := helper.EncodedToken(strToken)
+	// Find user for get fullname
+	userRepository := user.NewRepository(db)
+	userService := user.NewService(userRepository)
+	userData, _ := userService.GetUserById(userId)
+
+	// Create request
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:8080/api/posts", nil)
+	// Added header content type
+	request.Header.Add("Content-Type", "application/json")
+	// Added header Authorization with by inserting jwt token
+	request.Header.Add("Authorization", strToken)
+
+	// Create recorder
+	recorder := httptest.NewRecorder()
+
+	// Run server http
+	router.ServeHTTP(recorder, request)
+
+	// Get response
+	response := recorder.Result()
+
+	// Read response
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	// Decode json
+	json.Unmarshal(body, &responseBody)
+
+	// Response status code must be 200 (success)
+	assert.Equal(t, 200, response.StatusCode)
+	// Response body status code must be 200 (success)
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	// Response body status must be success
+	assert.Equal(t, "success", responseBody["status"])
+	// Response body message
+	assert.Equal(t, "List of posts", responseBody["message"])
+
+	// Response data list posts
+	var listPosts = responseBody["data"].([]interface{})
+	// Response body data length not 0
+	assert.NotEqual(t, 0, len(listPosts))
+
+	// Var for count is there author who is currently login in the post list
+	countAuthor := 0
+
+	// All property not empty
+	for _, list := range listPosts {
+		mapList := list.(map[string]interface{})
+		assert.NotEmpty(t, mapList["id"])
+		assert.NotEmpty(t, mapList["author"])
+		assert.NotEmpty(t, mapList["title"])
+		// If author in list is same with fullname which currently login
+		if mapList["author"] == userData.Fullname {
+			// Increase value
+			countAuthor++
+		}
+	}
+
+	// var count author must be 0
+	assert.Equal(t, 0, countAuthor)
+}
+
 // Todo: get all list post query title
-// Todo: get all list with is admin
-// Todo: get all list without is admin
 // Todo: get all list post unauthorized
