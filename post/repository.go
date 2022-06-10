@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	Save(post Post) (Post, error)
 	Update(post Post) (Post, error)
+	Delete(post Post) error
 	FindAll(user user.User) ([]Post, error)
 	FindById(Id string) (Post, error)
 	FindByTitle(title string) ([]Post, error)
@@ -42,6 +43,16 @@ func (r *repository) Update(post Post) (Post, error) {
 	}
 
 	return post, nil
+}
+
+func (r *repository) Delete(post Post) error {
+	// Delete data
+	err := r.db.Delete(&post).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repository) FindAll(user user.User) ([]Post, error) {
