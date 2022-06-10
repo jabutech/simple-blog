@@ -157,6 +157,62 @@ func (h *postHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *postHandler) Delete(c *gin.Context) {
+	var input post.DeletePostInput
+	// Ambil uri id
+	err := c.ShouldBindUri(&input)
+	if err != nil {
+		// Create new map error message
+		errorMessage := gin.H{"errors": err}
+
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Updated failed",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Get data current user is logged in from context
+	currentUser := c.MustGet("currentUser").(user.User)
+	// Get status is_admin
+	userIsAdmin := false
+	if currentUser.IsAdmin == 1 {
+		userIsAdmin = true
+	}
+
+	// Delete post
+	_, err = h.postService.Delete(input.PostId, userIsAdmin)
+	if err != nil {
+		// Create new map error message
+		errorMessage := gin.H{"errors": err.Error()}
+
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Delete failed",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Create format response with helper ApiResponseWithoutData
+	response := helper.ApiResponseWithoutData(
+		http.StatusOK,
+		"success",
+		"Post has been deleted",
+	)
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (h *postHandler) GetPosts(c *gin.Context) {
 	// Get query `title`
 	title := c.Query("title")

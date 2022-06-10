@@ -10,3 +10,7 @@ type UpdatePostInput struct {
 	PostId string `uri:"post_id"`
 	UserId string `uri:"user_id"`
 }
+
+type DeletePostInput struct {
+	PostId string `uri:"post_id"`
+}

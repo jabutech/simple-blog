@@ -68,8 +68,10 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	posts.GET("", authMiddleware(userService), postHandler.GetPosts)
 	// Endpond create new post
 	posts.POST("", authMiddleware(userService), postHandler.Create)
-	// Endpond update new post
+	// Endpond update post
 	posts.PUT("/:post_id", authMiddleware(userService), postHandler.Update)
+	// Endpond delete post
+	posts.DELETE("/:post_id", authMiddleware(userService), postHandler.Delete)
 
 	// Endpoint ping
 	api.GET("/ping", pingHandler.Ping)
