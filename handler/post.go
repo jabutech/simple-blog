@@ -84,6 +84,84 @@ func (h *postHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *postHandler) Update(c *gin.Context) {
+	var updateInput post.UpdatePostInput
+
+	// get request title from json
+	err := c.ShouldBindJSON(&updateInput)
+	if err != nil {
+		// Iteration error with helper format validation error
+		errors := helper.FormatValidationError(err)
+		// Create new map error message
+		errorMessage := gin.H{"errors": errors}
+
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Updated failed",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Get id from uri
+	err = c.ShouldBindUri(&updateInput)
+	if err != nil {
+		// Create new map error message
+		errorMessage := gin.H{"errors": err}
+
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Updated failed",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Get data current user is logged in from context
+	currentUser := c.MustGet("currentUser").(user.User)
+	// Passing id current user into var input.UserId
+	updateInput.UserId = currentUser.ID
+
+	// Update
+	updatedPost, err := h.postService.Update(updateInput)
+	if err != nil {
+		// Create new map error message
+		errorMessage := gin.H{"errors": err.Error()}
+
+		// Api Response failed with helper
+		response := helper.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Updated failed",
+			errorMessage,
+		)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Format response
+	formatPost := post.FormatPostCreateOrUpdate(updatedPost)
+
+	// Create format response with helper ApiResponseWithoutData
+	response := helper.ApiResponseWithData(
+		http.StatusOK,
+		"success",
+		"Post has been updated successfully",
+		formatPost,
+	)
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (h *postHandler) GetPosts(c *gin.Context) {
 	// Get query `title`
 	title := c.Query("title")

@@ -68,6 +68,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	posts.GET("", authMiddleware(userService), postHandler.GetPosts)
 	// Endpond create new post
 	posts.POST("", authMiddleware(userService), postHandler.Create)
+	// Endpond update new post
+	posts.PUT("/:post_id", authMiddleware(userService), postHandler.Update)
 
 	// Endpoint ping
 	api.GET("/ping", pingHandler.Ping)
@@ -109,7 +111,7 @@ func authMiddleware(userService user.Service) gin.HandlerFunc {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)
 
 			if !ok {
-				return nil, errors.New("Invalid token")
+				return nil, errors.New("invalid token")
 			}
 
 			return []byte(config.SecretKey), nil

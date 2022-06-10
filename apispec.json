@@ -723,7 +723,7 @@
                   "message": "post has been updated successfully",
                   "data": {
                     "id": "cd84146c-715f-47e8-a817-28331d49729c",
-                    "id_user": "34e06fa1-e7a6-41f3-b297-e44c2171e57b",
+                    "author": "Rizky Darmawan",
                     "title": "Deep Work"
                   }
                 }
